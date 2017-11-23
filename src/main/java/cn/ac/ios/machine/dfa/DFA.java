@@ -25,7 +25,7 @@ import cn.ac.ios.machine.Transition;
 import cn.ac.ios.words.APList;
 import cn.ac.ios.words.Word;
 
-public class DFA extends MachineBase {
+public class DFA extends MachineBase implements Cloneable {
 	
 	private final DFAAcc acc;
 	
@@ -59,4 +59,10 @@ public class DFA extends MachineBase {
 		return new DFAState(this, index);
 	}
 
+    @Override
+    public DFA clone() throws CloneNotSupportedException {
+        DFA res = new DFA(this.iApList);
+        //TODO
+        return res;
+    }
 }

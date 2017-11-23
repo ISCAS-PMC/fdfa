@@ -21,7 +21,7 @@ import java.util.BitSet;
 import cn.ac.ios.machine.Acceptance;
 import cn.ac.ios.machine.AcceptanceType;
 
-class DFAAcc implements Acceptance {
+public class DFAAcc implements Acceptance {
 
 	private final BitSet finals;
 	

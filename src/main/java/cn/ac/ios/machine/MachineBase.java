@@ -31,7 +31,7 @@ public abstract class MachineBase implements Machine {
 		this.iApList = aps;
 		this.states = new ArrayList<>();
 	}
-	
+
 	public APList getInAPs() {
 		return iApList;
 	}
