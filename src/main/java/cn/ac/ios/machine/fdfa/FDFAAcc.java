@@ -19,7 +19,7 @@ public class FDFAAcc implements Acceptance, Cloneable{
     public FDFAAcc(List<DFAAcc> progressAcceptance) {
         this.progressAcceptance = progressAcceptance;
     }
-    
+
     public List<DFAAcc> getProgressAcceptance() {
         return progressAcceptance;
     }

@@ -11,6 +11,16 @@ import java.util.stream.Collectors;
 
 public class FDFA implements Machine {
 
+    private final DFA leadingDFA;
+    private final List<DFA> progressDFAs;
+    private final FDFAAcc acceptance;
+
+    public FDFA(APList aps) {
+        this.leadingDFA = new DFA(aps);
+        this.progressDFAs = new ArrayList<>();
+        this.acceptance = new FDFAAcc();
+    }
+
     public FDFA(DFA leadDFA, List<DFA> proDFAs) {
         assert leadDFA != null;
         assert proDFAs != null;
@@ -23,7 +33,7 @@ public class FDFA implements Machine {
         );
 
         assert leadDFA.getAcceptance().getAccType() == AcceptanceType.DFA;
-        this.acceptance = new FDFAAcc((DFAAcc) leadDFA.getAcceptance(), proAcc);
+        this.acceptance = new FDFAAcc(proAcc);
     }
 
     public FDFA(DFA leadingDFA, List<DFA> progressDFAs, FDFAAcc acceptance, List<String> labels) {
@@ -32,10 +42,6 @@ public class FDFA implements Machine {
         this.acceptance = acceptance;
         this.labels = labels;
     }
-
-    private final DFA leadingDFA;
-    private final List<DFA> progressDFAs;
-    private final FDFAAcc acceptance;
 
     public DFA getLeadingDFA() {
         return leadingDFA;

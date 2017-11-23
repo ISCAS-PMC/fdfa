@@ -18,7 +18,7 @@ package cn.ac.ios.machine.dfa;
 
 import cn.ac.ios.machine.StateBase;
 
-class DFAState extends StateBase {
+public class DFAState extends StateBase {
 	
 	public DFAState(DFA machine, int index) {
 		super(machine, index);
