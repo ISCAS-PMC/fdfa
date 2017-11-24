@@ -15,11 +15,11 @@ public class FDFA implements Machine, Cloneable {
     public final List<DFA> progressDFAs;
 //    private final FDFAAcc acceptance;
 
-    public FDFA(APList aps) {
-        this.leadingDFA = new DFA(aps);
-        this.progressDFAs = new ArrayList<>();
-//        this.acceptance = new FDFAAcc();
-    }
+//    public FDFA(APList aps) {
+//        this.leadingDFA = new DFA(aps);
+//        this.progressDFAs = new ArrayList<>();
+////        this.acceptance = new FDFAAcc();
+//    }
 
     public FDFA(DFA leadDFA, List<DFA> proDFAs) {
         assert leadDFA != null;
@@ -67,7 +67,8 @@ public class FDFA implements Machine, Cloneable {
         builder.append("M: \n");
         builder.append(leadingDFA.toString() + "\n");
         for(int index = 0; index < progressDFAs.size(); index ++) {
-            builder.append("P" + index + " " + labels.get(index) + "\n");
+//            builder.append("P" + index + " " + labels.get(index) + "\n");
+            builder.append("P" + index + "\n");
             builder.append(progressDFAs.get(index).toString() + "\n");
         }
         return builder.toString();

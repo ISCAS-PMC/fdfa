@@ -20,13 +20,12 @@ public class BasicOperations {
             FDFA res = F.clone();
             for (DFA progess : res.progressDFAs ) {
                 DFAAcc f = progess.getAcceptance();
-                f.finals.flip(0,f.finals.size()-1);
+                f.finals.flip(0,progess.getStateSize());
             }
-
+            return res;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
@@ -87,19 +86,23 @@ public class BasicOperations {
 
         assert F2.getInAPs().equals(ap);
 
-        FDFA res = new FDFA(F1.getInAPs());
+//        FDFA res = new FDFA(F1.getInAPs());
 
         ArrayList<StatePair> decomp = new ArrayList<>();
-        BasicOperations.intersection(decomp,F1.leadingDFA,F2.leadingDFA);
+        DFA resLeading = BasicOperations.intersection(decomp,F1.leadingDFA,F2.leadingDFA);
 
+        ArrayList<DFA> progressList = new ArrayList<>();
         for (StatePair p : decomp) {
             DFA progress = BasicOperations.intersection(
                     new ArrayList<>(),
                     F1.getProgressDFA(p.s1.getIndex()),
                     F2.getProgressDFA(p.s2.getIndex())
             );
-            res.progressDFAs.set(p.s.getIndex(),progress);
+            // make sure that states in decomp are in the oder of State::getIndex()
+            // res.progressDFAs.set(p.s.getIndex(),progress);
+            progressList.add(progress);
         }
+        FDFA res = new FDFA(resLeading,progressList);
         return res;
     }
 
