@@ -9,16 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FDFA implements Machine {
+public class FDFA implements Machine, Cloneable {
 
-    private final DFA leadingDFA;
-    private final List<DFA> progressDFAs;
-    private final FDFAAcc acceptance;
+    public final DFA leadingDFA;
+    public final List<DFA> progressDFAs;
+//    private final FDFAAcc acceptance;
 
     public FDFA(APList aps) {
         this.leadingDFA = new DFA(aps);
         this.progressDFAs = new ArrayList<>();
-        this.acceptance = new FDFAAcc();
+//        this.acceptance = new FDFAAcc();
     }
 
     public FDFA(DFA leadDFA, List<DFA> proDFAs) {
@@ -26,22 +26,22 @@ public class FDFA implements Machine {
         assert proDFAs != null;
         this.leadingDFA = leadDFA;
         this.progressDFAs = proDFAs;
-        ArrayList<DFAAcc> proAcc = new ArrayList(
-                this.progressDFAs.stream()
-                        .map(DFA::getAcceptance)
-                        .collect(Collectors.toList())
-        );
+//        ArrayList<DFAAcc> proAcc = new ArrayList(
+//                this.progressDFAs.stream()
+//                        .map(DFA::getAcceptance)
+//                        .collect(Collectors.toList())
+//        );
 
         assert leadDFA.getAcceptance().getAccType() == AcceptanceType.DFA;
-        this.acceptance = new FDFAAcc(proAcc);
+//        this.acceptance = new FDFAAcc(proAcc);
     }
 
-    public FDFA(DFA leadingDFA, List<DFA> progressDFAs, FDFAAcc acceptance, List<String> labels) {
-        this.leadingDFA = leadingDFA;
-        this.progressDFAs = progressDFAs;
-        this.acceptance = acceptance;
-        this.labels = labels;
-    }
+//    public FDFA(DFA leadingDFA, List<DFA> progressDFAs, FDFAAcc acceptance, List<String> labels) {
+//        this.leadingDFA = leadingDFA;
+//        this.progressDFAs = progressDFAs;
+////        this.acceptance = acceptance;
+//        this.labels = labels;
+//    }
 
     public DFA getLeadingDFA() {
         return leadingDFA;
@@ -75,20 +75,33 @@ public class FDFA implements Machine {
 
     @Override
     public FDFA clone() throws CloneNotSupportedException {
-//        TODO
-//                FDFA res =  new FDFA(
+
+        DFA leadingClone = this.leadingDFA.clone();
+
+        ArrayList<DFA> progressArray = new ArrayList<>();
+
+        for (DFA progess : this.progressDFAs){
+            DFA progessClone = progess.clone();
+            progressArray.add(progessClone);
+        }
+
+        return new FDFA(leadingClone,progressArray);
+//        FDFA res =  new FDFA(
 //                this.leadingDFA.clone(),
 //                this.progressDFAs.clone(),
 //                this.acceptance.clone(),
 //                this.labels.clone();
 //        );
-
-        return null;
     }
+
+//    @Override
+//    public Acceptance getAcceptance() {
+//        return this.acceptance;
+//    }
 
     @Override
     public Acceptance getAcceptance() {
-        return this.acceptance;
+        return null;
     }
 
     @Override

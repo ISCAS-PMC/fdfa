@@ -58,7 +58,9 @@ public abstract class MachineBase implements Machine {
 	public int getInitialState() {
 		return initState;
 	}
-	
+	public State InitalState(){
+		return this.getState(initState);
+	}
 	public String toString() {
 		return MachineExporterDOT.toString(this);
 	}

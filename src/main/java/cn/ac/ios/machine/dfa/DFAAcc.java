@@ -23,7 +23,7 @@ import cn.ac.ios.machine.AcceptanceType;
 
 public class DFAAcc implements Acceptance {
 
-	private final BitSet finals;
+	public final BitSet finals;
 	
 	public DFAAcc() {
 		finals = new BitSet();

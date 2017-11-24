@@ -24,6 +24,8 @@ import cn.ac.ios.machine.Transition;
 
 import cn.ac.ios.words.APList;
 import cn.ac.ios.words.Word;
+import gnu.trove.map.hash.TIntObjectHashMap;
+import java.util.HashMap;
 
 public class DFA extends MachineBase implements Cloneable {
 	
@@ -45,7 +47,7 @@ public class DFA extends MachineBase implements Cloneable {
 	}
 
 	@Override
-	public Acceptance getAcceptance() {
+	public DFAAcc getAcceptance() {
 		return acc;
 	}
 
@@ -60,9 +62,31 @@ public class DFA extends MachineBase implements Cloneable {
 	}
 
     @Override
-    public DFA clone() throws CloneNotSupportedException {
+    public DFA clone()  {
         DFA res = new DFA(this.iApList);
-        //TODO
+
+		TIntObjectHashMap<State> m = new TIntObjectHashMap<State>();
+
+		for (State u : this.states)
+        	m.put(u.getIndex(),res.createState());
+
+		res.setInitial(m.get(this.initState));
+
+		for (State u : this.states) {
+
+			if (this.acc.isFinal(u.getIndex())){
+				res.acc.setFinal(m.get(u.getIndex()).getIndex());
+			}
+
+			State v = m.get(u.getIndex());
+			Transition[] trans = u.getTransitions();
+
+			// TOTALITY
+			for (int letter = 0; letter < this.iApList.size(); letter++) {
+				v.addTransition(letter,m.get(trans[letter].getSuccessor()).getIndex());
+			}
+		}
+
         return res;
     }
 }

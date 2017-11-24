@@ -1,21 +1,26 @@
 package cn.ac.ios.machine.fdfa;
 
+import cn.ac.ios.machine.Transition;
 import cn.ac.ios.machine.dfa.*;
 import cn.ac.ios.machine.State;
 import cn.ac.ios.words.APList;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class BasicOperations {
+
     // Boolean Operations
+
     static public FDFA complement(FDFA F){
         try {
             FDFA res = F.clone();
-            FDFAAcc Acc = (FDFAAcc) res.getAcceptance();
-
-            for (int i = 0; i < res.getNumProgressDFA() ; i++) {
-                DFAAcc Fi = Acc.getProgressAcceptance().get(i);
-                Fi.getFinals().flip(0,Fi.getFinals().size()-1);
+            for (DFA progess : res.progressDFAs ) {
+                DFAAcc f = progess.getAcceptance();
+                f.finals.flip(0,f.finals.size()-1);
             }
 
         } catch (CloneNotSupportedException e) {
@@ -24,6 +29,55 @@ public class BasicOperations {
 
         return null;
     }
+
+    static public DFA intersection(ArrayList<StatePair> decomp,DFA A1, DFA A2){
+        APList ap = A1.getInAPs();
+        assert A2.getInAPs().equals(ap);
+
+        DFA C = new DFA(ap);
+        HashMap<StatePair,StatePair> m = new HashMap<>();
+        LinkedList<StatePair> Q = new LinkedList<>();
+
+        C.setInitial(C.createState());
+        StatePair head = new StatePair(C.InitalState(),A1.InitalState(),A2.InitalState());
+
+        m.put(head,head);
+        decomp.add(head);
+        Q.add(head);
+
+        while ( Q.size() > 0 ) {
+            head = Q.removeFirst();
+            boolean isAccepted = A1.getAcceptance().isFinal(head.s1.getIndex())
+                                 &&
+                                 A2.getAcceptance().isFinal(head.s2.getIndex());
+            if(isAccepted){
+                C.getAcceptance().setFinal(head.s.getIndex());
+            }
+            Transition[] trans1 = head.s1.getTransitions();
+            Transition[] trans2 = head.s2.getTransitions();
+            for (int letter = 0; letter < ap.size(); letter++){
+                Transition t1 = trans1[letter];
+                Transition t2 = trans2[letter];
+                StatePair p = new StatePair(
+                        A1.getState(t1.getSuccessor()),
+                        A2.getState(t2.getSuccessor())
+                );
+
+                StatePair q = m.get(p);
+                if (q == null) {
+                    p.s = C.createState();
+                    m.put(p,p);
+                    decomp.add(p);
+                    Q.add(p);
+                    q = p;
+                }
+                head.s.addTransition(letter,q.s.getIndex());
+            }
+
+        }
+        return C;
+    }
+
     static public FDFA intersection(FDFA F1, FDFA F2){
 
         APList ap = F1.getInAPs();
@@ -34,36 +88,21 @@ public class BasicOperations {
         assert F2.getInAPs().equals(ap);
 
         FDFA res = new FDFA(F1.getInAPs());
-        //TODO use template to refactoring
-        ProductDFA leading = res.getLeadingDFA();
-        for (int i = 0; i < ResSize ; i++) {
-            leading.createState();
-        }
 
-        for (int i = 0; i < F1.getStateSize(); i++) {
-            for (int j = 0; j < F2.getStateSize(); j++) {
+        ArrayList<StatePair> decomp = new ArrayList<>();
+        BasicOperations.intersection(decomp,F1.leadingDFA,F2.leadingDFA);
 
-                ProudctState u = leading.getState(i,j);
-                State ui = F1.getLeadingDFA().getState(i);
-                State uj = F1.getLeadingDFA().getState(i);
-
-                for (int a = 0; a < ap.size(); a++){
-                    int xIndex = ui.getSuccessor(a);
-                    int yIndex = uj.getSuccessor(a);
-                    u.addTransition(a,xIndex * RSize + yIndex);
-                }
-                DFA Pi = F1.getProgressDFA(i);
-                DFA Pj = F1.getProgressDFA(j);
-                //TODO DFA union intersection
-                // add (i,j)-a->(x,y) in leading DFA for any a
-                // construct Progess_i,j
-                // set Acceptance for Progess_i,j in FDFAAcc
-
-
-            }
+        for (StatePair p : decomp) {
+            DFA progress = BasicOperations.intersection(
+                    new ArrayList<>(),
+                    F1.getProgressDFA(p.s1.getIndex()),
+                    F2.getProgressDFA(p.s2.getIndex())
+            );
+            res.progressDFAs.set(p.s.getIndex(),progress);
         }
         return res;
     }
+
     static public FDFA union(FDFA F1, FDFA F2){
         return null;
     }

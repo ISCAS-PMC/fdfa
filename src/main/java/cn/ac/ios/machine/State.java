@@ -23,8 +23,9 @@ public interface State {
 	int getIndex();
 	int getSuccessor(int letter);
     int getOutput(int letter);
-	
-	// setters
+	Transition[] getTransitions();
+
+		// setters
 	void addTransition(int letter, int state);
 	void addTransition(int letter, int state, int out);
 	void addOutput(int letter, int output);

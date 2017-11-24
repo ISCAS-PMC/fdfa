@@ -27,7 +27,11 @@ public abstract class StateBase implements State {
 		this.index = index;
 		this.trans = new Transition[machine.getInAPs().size()];
 	}
-	
+
+	public Transition[] getTransitions() {
+		return trans;
+	}
+
 	@Override
 	public Machine getMachine() {
 		return machine;
