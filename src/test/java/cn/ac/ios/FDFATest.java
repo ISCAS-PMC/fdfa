@@ -3,8 +3,6 @@ package cn.ac.ios;
 import cn.ac.ios.machine.fdfa.*;
 import cn.ac.ios.machine.dfa.*;
 
-import java.util.ArrayList;
-
 public class FDFATest {
 
     public static void ComplementTest() {
@@ -24,8 +22,15 @@ public class FDFATest {
         System.out.println(C);
     }
 
+    public static void UnionTest() {
+        FDFA F1 = DFAGen.exmple_FDFA1();
+        FDFA F2 = DFAGen.exmple_FDFA2();
+        FDFA C = BasicOperations.union(F1,F2);
+        System.out.println(C);
+    }
+
     public static void main(String[] argv){
-        InterSectionTest();
+        UnionTest();
     }
 
 

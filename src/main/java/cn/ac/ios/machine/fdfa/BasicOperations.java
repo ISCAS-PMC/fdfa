@@ -2,19 +2,17 @@ package cn.ac.ios.machine.fdfa;
 
 import cn.ac.ios.machine.Transition;
 import cn.ac.ios.machine.dfa.*;
-import cn.ac.ios.machine.State;
 import cn.ac.ios.words.APList;
-import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 
 public class BasicOperations {
 
     // Boolean Operations
-
     static public FDFA complement(FDFA F){
         try {
             FDFA res = F.clone();
@@ -29,7 +27,8 @@ public class BasicOperations {
         return null;
     }
 
-    static public DFA intersection(ArrayList<StatePair> decomp,DFA A1, DFA A2){
+    static public DFA ProductDFA(ArrayList<StatePair> decomp, DFA A1, DFA A2, BinaryOperator<Boolean> isAccepted){
+
         APList ap = A1.getInAPs();
         assert A2.getInAPs().equals(ap);
 
@@ -46,10 +45,13 @@ public class BasicOperations {
 
         while ( Q.size() > 0 ) {
             head = Q.removeFirst();
-            boolean isAccepted = A1.getAcceptance().isFinal(head.s1.getIndex())
-                                 &&
-                                 A2.getAcceptance().isFinal(head.s2.getIndex());
-            if(isAccepted){
+//            boolean isAccepted = A1.getAcceptance().isFinal(head.s1.getIndex())
+//                                 &&
+//                                 A2.getAcceptance().isFinal(head.s2.getIndex());
+            if (isAccepted.apply(
+                    A1.getAcceptance().isFinal(head.s1.getIndex()),
+                    A2.getAcceptance().isFinal(head.s2.getIndex())
+            )) {
                 C.getAcceptance().setFinal(head.s.getIndex());
             }
             Transition[] trans1 = head.s1.getTransitions();
@@ -77,7 +79,7 @@ public class BasicOperations {
         return C;
     }
 
-    static public FDFA intersection(FDFA F1, FDFA F2){
+    static public FDFA ProductFDFA(FDFA F1, FDFA F2,BinaryOperator<Boolean> isAccepted){
 
         APList ap = F1.getInAPs();
         int LSize = F1.getStateSize();
@@ -89,14 +91,20 @@ public class BasicOperations {
 //        FDFA res = new FDFA(F1.getInAPs());
 
         ArrayList<StatePair> decomp = new ArrayList<>();
-        DFA resLeading = BasicOperations.intersection(decomp,F1.leadingDFA,F2.leadingDFA);
+        DFA resLeading = BasicOperations.ProductDFA(
+                decomp,
+                F1.leadingDFA,
+                F2.leadingDFA,
+                isAccepted
+        );
 
         ArrayList<DFA> progressList = new ArrayList<>();
         for (StatePair p : decomp) {
-            DFA progress = BasicOperations.intersection(
+            DFA progress = BasicOperations.ProductDFA(
                     new ArrayList<>(),
                     F1.getProgressDFA(p.s1.getIndex()),
-                    F2.getProgressDFA(p.s2.getIndex())
+                    F2.getProgressDFA(p.s2.getIndex()),
+                    isAccepted
             );
             // make sure that states in decomp are in the oder of State::getIndex()
             // res.progressDFAs.set(p.s.getIndex(),progress);
@@ -106,8 +114,12 @@ public class BasicOperations {
         return res;
     }
 
+    static public FDFA intersection(FDFA F1, FDFA F2){
+        return BasicOperations.ProductFDFA(F1,F2,Boolean::logicalAnd);
+    }
+
     static public FDFA union(FDFA F1, FDFA F2){
-        return null;
+        return BasicOperations.ProductFDFA(F1,F2,Boolean::logicalOr);
     }
 
     // Decision Procedures
