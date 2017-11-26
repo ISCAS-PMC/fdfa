@@ -202,11 +202,10 @@ public class FDFA implements Machine, Cloneable {
         return this.currentDFA.continueRun(w);
     }
 
-    public State shiftToProgess(){
+    public DFA shiftToProgess(){
         this.currentDFAIndex = this.leadingDFA.getCurrentState().getIndex();
-        this.currentDFA = this.progressDFAs.get(this.currentDFAIndex);
         System.out.println("Shift to P_" + this.currentDFAIndex);
-        return this.currentDFA.resetCureentState();
+        return this.currentDFA = this.progressDFAs.get(this.currentDFAIndex);
     }
 
 

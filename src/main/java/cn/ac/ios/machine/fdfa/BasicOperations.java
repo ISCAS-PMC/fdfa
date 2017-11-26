@@ -151,6 +151,14 @@ public class BasicOperations {
         }
         return null;
     }
+    static public boolean MembershipCheck(FDFA A,WordPair P){
+        if (!P.isNormalized()){
+            P = BasicOperations.normalize(P.getU(),P.getV(),A.leadingDFA);
+        }
+        A.run(P);
+        DFA Progess = A.getProgressDFA(A.getCuurentDFAIndex());
+        return Progess.getAcceptance().isFinal(A.getCurrentState().getIndex());
+    }
     static boolean isEmpty(FDFA F){
         return false;
     }

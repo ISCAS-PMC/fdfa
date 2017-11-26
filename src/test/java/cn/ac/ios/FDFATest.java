@@ -40,12 +40,12 @@ public class FDFATest {
     }
     public static void FDFARunTest() {
         FDFA A = DFAGen.exmple_FDFA1();
-        Word u = DFAGen.StringtoWord("ba");
-        Word v = DFAGen.StringtoWord("aab");
+        Word u = DFAGen.StringtoWord("baa");
+        Word v = DFAGen.StringtoWord("bbaaaaaa");
         WordPair P = BasicOperations.normalize(u,v,A.leadingDFA);
         System.out.println(A);
-        A.run(P);
-
+//        A.run(P);
+        System.out.println(BasicOperations.MembershipCheck(A,P));
     }
     public static void main(String[] argv){
         FDFARunTest();
