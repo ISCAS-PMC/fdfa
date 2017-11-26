@@ -3,10 +3,13 @@ package cn.ac.ios.machine.fdfa;
 import cn.ac.ios.machine.Transition;
 import cn.ac.ios.machine.dfa.*;
 import cn.ac.ios.machine.State;
+import cn.ac.ios.util.UtilMachine;
 import cn.ac.ios.words.APList;
 import cn.ac.ios.words.Word;
+import dk.brics.automaton.Automaton;
 import gnu.trove.map.hash.TIntIntHashMap;
 
+import javax.rmi.CORBA.Util;
 import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -159,7 +162,24 @@ public class BasicOperations {
         DFA Progess = A.getProgressDFA(A.getCuurentDFAIndex());
         return Progess.getAcceptance().isFinal(A.getCurrentState().getIndex());
     }
-    static boolean isEmpty(FDFA F){
+    static public boolean isEmpty(FDFA F){
+        DFA leading = F.getLeadingDFA();
+        assert leading.getAcceptance().getFinals().length() == 0;
+
+        for (int u = 0; u < leading.getStateSize(); u++) {
+            DFA LoopU = leading.clone();
+            LoopU.setInitial(u);
+            LoopU.getAcceptance().setFinal(u);
+            Automaton dkLoopU = UtilMachine.dfaToDkAutomaton(LoopU);
+            Automaton dkPorgU = UtilMachine.dfaToDkAutomaton(F.progressDFAs.get(u));
+            Automaton inter = dk.brics.automaton.BasicOperations.intersection(dkLoopU,dkPorgU);
+            System.out.println(dkLoopU);
+            System.out.println(dkPorgU);
+            System.out.println(inter);
+            if (! inter.isEmpty()){
+                return true;
+            }
+        }
         return false;
     }
     static public FDFA minus(FDFA F1, FDFA F2){

@@ -47,8 +47,13 @@ public class FDFATest {
 //        A.run(P);
         System.out.println(BasicOperations.MembershipCheck(A,P));
     }
+    public static void EmptyTest(){
+        FDFA A = DFAGen.exmple_FDFA1();
+        System.out.println(BasicOperations.isEmpty(A));
+
+    }
     public static void main(String[] argv){
-        FDFARunTest();
+        EmptyTest();
     }
 
 
