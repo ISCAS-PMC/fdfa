@@ -182,7 +182,26 @@ public class BasicOperations {
         }
         return false;
     }
-    static public FDFA minus(FDFA F1, FDFA F2){
-        return null;
+
+    // TODO
+    // implement university by emptiness
+    // implement equality by containment
+
+
+    /**
+     * language containment
+     * @param F1
+     * @param F2
+     * @return return true if [F1] <= [F2]
+     */
+    static public boolean contains(FDFA F1, FDFA F2){
+        return BasicOperations.isEmpty(BasicOperations.minus(F1,F2));
     }
+    
+    static public FDFA minus(FDFA F1, FDFA F2){
+        FDFA NF2 = BasicOperations.complement(F2);
+        FDFA inter = BasicOperations.intersection(F1,NF2);
+        return inter;
+    }
+
 }
