@@ -2,6 +2,8 @@ package cn.ac.ios;
 
 import cn.ac.ios.machine.fdfa.*;
 import cn.ac.ios.machine.dfa.*;
+import cn.ac.ios.words.Word;
+import cn.ac.ios.machine.State;
 
 public class FDFATest {
 
@@ -29,8 +31,24 @@ public class FDFATest {
         System.out.println(C);
     }
 
+    public static void DFARunTest() {
+        DFA A = DFAGen.example_M1();
+        Word w = DFAGen.StringtoWord("ababababbbb");
+        State s = A.run(w);
+        System.out.println(A);
+        System.out.println(s.getIndex());
+    }
+    public static void FDFARunTest() {
+        FDFA A = DFAGen.exmple_FDFA1();
+        Word u = DFAGen.StringtoWord("ba");
+        Word v = DFAGen.StringtoWord("aab");
+        WordPair P = BasicOperations.normalize(u,v,A.leadingDFA);
+        System.out.println(A);
+        A.run(P);
+
+    }
     public static void main(String[] argv){
-        UnionTest();
+        FDFARunTest();
     }
 
 

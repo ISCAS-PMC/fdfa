@@ -19,6 +19,8 @@ package cn.ac.ios.machine;
 import cn.ac.ios.words.APList;
 import cn.ac.ios.words.Word;
 
+import java.util.List;
+
 // only support for DFA and deterministic Mealy machine
 public interface Machine {
 	
@@ -71,6 +73,10 @@ public interface Machine {
 	
 	Transition makeTransition(int state, int out);
 	State makeState(int index);
-	
+
+	public State resetCureentState();
+	public State getCurrentState();
+	public State run(Word w);
+	public State continueRun(Word w);
 
 }

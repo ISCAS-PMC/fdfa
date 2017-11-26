@@ -2,11 +2,12 @@ package cn.ac.ios.machine.fdfa;
 
 import cn.ac.ios.machine.Transition;
 import cn.ac.ios.machine.dfa.*;
+import cn.ac.ios.machine.State;
 import cn.ac.ios.words.APList;
+import cn.ac.ios.words.Word;
+import gnu.trove.map.hash.TIntIntHashMap;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
@@ -123,6 +124,33 @@ public class BasicOperations {
     }
 
     // Decision Procedures
+    static public WordPair normalize(Word u, Word v, DFA Q){
+//        TIntIntHashMap pos = new TIntIntHashMap();
+        int[] visited = new int[Q.getStateSize()];
+        for (int i = 0; i < Q.getStateSize(); i++)
+            visited[i] = -1;
+        State s = Q.run(u);
+        visited[s.getIndex()] = 0;
+//        pos.put(0,s.getIndex());
+        for (int n = 1; n <= Q.getStateSize() ; n++) {
+            s = Q.continueRun(v);
+            if (visited[s.getIndex()] >= 0){
+                int i = visited[s.getIndex()];
+                int j = n - i;
+                WordPair res = new WordPair(
+                        u,
+                        v,
+                        i,
+                        j,
+                        true,
+                        Q
+                );
+                return res;
+            }
+            visited[s.getIndex()] = n ;
+        }
+        return null;
+    }
     static boolean isEmpty(FDFA F){
         return false;
     }

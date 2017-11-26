@@ -8,6 +8,7 @@ import cn.ac.ios.machine.Machine;
 import cn.ac.ios.machine.State;
 import cn.ac.ios.machine.dfa.DFA;
 import cn.ac.ios.words.Alphabet;
+import cn.ac.ios.words.*;
 
 public class DFAGen {
 
@@ -101,6 +102,15 @@ public class DFAGen {
 
         return U;
     };
+
+    public static Word StringtoWord(String s){
+        int[] data = new int[s.length()];
+        for (int i = 0; i < s.length(); i++) {
+            String t = s.substring(i,i+1);
+            data[i] = alphabet.getAPs().indexOf(t);
+        }
+        return alphabet.getArrayWord(data);
+    }
 
     private DFAGen() {
 

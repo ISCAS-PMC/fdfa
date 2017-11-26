@@ -20,13 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.ac.ios.words.APList;
+import cn.ac.ios.words.Word;
 
 public abstract class MachineBase implements Machine {
 	
 	protected int initState;
 	protected final APList iApList;
 	protected final List<State> states;
-	
+	protected State currentState = null;
+
 	public MachineBase(APList aps) {
 		this.iApList = aps;
 		this.states = new ArrayList<>();
@@ -42,6 +44,7 @@ public abstract class MachineBase implements Machine {
 	
 	public void setInitial(int state) {
 		initState = state;
+
 	}
 	
 	public State createState() {
@@ -65,4 +68,34 @@ public abstract class MachineBase implements Machine {
 		return MachineExporterDOT.toString(this);
 	}
 
+
+	@Override
+	public State resetCureentState() {
+		return this.currentState = this.getState(this.initState);
+	}
+	@Override
+	public State getCurrentState() {
+		return currentState;
+	}
+
+	@Override
+	public State run(Word w) {
+		this.resetCureentState();
+		return this.continueRun(w);
+	}
+
+	@Override
+	public State continueRun(Word w) {
+		for (int i = 0; i < w.length(); i++) {
+			int nextIndex = currentState.getSuccessor(w.getLetter(i));
+            System.out.println(
+                    "State_" + this.currentState.getIndex() +
+                    "  ---" + w.getAPs().get(w.getLetter(i)) + "--->  " +
+                    "State_" + nextIndex
+            );
+
+            this.currentState = this.getState(nextIndex);
+		}
+		return this.currentState;
+	}
 }

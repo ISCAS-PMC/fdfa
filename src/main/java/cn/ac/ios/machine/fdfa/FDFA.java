@@ -13,6 +13,8 @@ public class FDFA implements Machine, Cloneable {
 
     public final DFA leadingDFA;
     public final List<DFA> progressDFAs;
+    private DFA currentDFA = null;
+    private int currentDFAIndex = -1;
 //    private final FDFAAcc acceptance;
 
 //    public FDFA(APList aps) {
@@ -171,4 +173,55 @@ public class FDFA implements Machine, Cloneable {
     public State makeState(int index) {
         return null;
     }
+
+    public int getCuurentDFAIndex() {
+        return this.currentDFAIndex;
+    }
+    //TODO
+    @Override
+    public State resetCureentState() {
+        this.currentDFA = this.leadingDFA;
+        this.currentDFAIndex = -1;
+        return currentDFA.resetCureentState();
+    }
+
+    @Override
+    public State getCurrentState() {
+        return currentDFA.getCurrentState();
+    }
+
+
+    @Override
+    public State run(Word w) {
+        this.resetCureentState();
+        return this.currentDFA.run(w);
+    }
+
+    @Override
+    public State continueRun(Word w) {
+        return this.currentDFA.continueRun(w);
+    }
+
+    public State shiftToProgess(){
+        this.currentDFAIndex = this.leadingDFA.getCurrentState().getIndex();
+        this.currentDFA = this.progressDFAs.get(this.currentDFAIndex);
+        System.out.println("Shift to P_" + this.currentDFAIndex);
+        return this.currentDFA.resetCureentState();
+    }
+
+
+    public State run(WordPair P) {
+        assert P.isNormalized();
+
+        this.run(P.getU());
+        for (int t = 0; t < P.getI(); t++) {
+            this.continueRun(P.getV());
+        }
+        this.shiftToProgess();
+        for (int t = 0; t < P.getJ(); t++) {
+            this.currentDFA.run(P.getV());
+        }
+        return this.currentDFA.getCurrentState();
+    }
+
 }
