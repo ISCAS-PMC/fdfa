@@ -18,7 +18,7 @@ package cn.ac.ios.machine.dfa;
 
 import cn.ac.ios.machine.TransitionBase;
 
-class DFATransition extends TransitionBase {
+public class DFATransition extends TransitionBase {
 
 	public DFATransition(int successor) {
 		super(successor);

@@ -2,6 +2,7 @@ package cn.ac.ios;
 
 import cn.ac.ios.machine.fdfa.*;
 import cn.ac.ios.machine.dfa.*;
+import cn.ac.ios.util.UtilMachine;
 import cn.ac.ios.words.Word;
 import cn.ac.ios.machine.State;
 
@@ -52,8 +53,14 @@ public class FDFATest {
         System.out.println(BasicOperations.isEmpty(A));
 
     }
+    public static void DBAToFDFATest(){
+        DFA B = DFAGen.example_DBA();
+        FDFA A = UtilMachine.DBAToFDFA(B);
+        System.out.println(A);
+
+    }
     public static void main(String[] argv){
-        EmptyTest();
+        DBAToFDFATest();
     }
 
 

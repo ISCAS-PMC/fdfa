@@ -3,6 +3,7 @@ package cn.ac.ios;
 import java.util.ArrayList;
 import java.util.Random;
 
+import cn.ac.ios.machine.buchi.DBA;
 import cn.ac.ios.machine.fdfa.*;
 import cn.ac.ios.machine.Machine;
 import cn.ac.ios.machine.State;
@@ -164,6 +165,22 @@ public class DFAGen {
         }
 
         return result;
+    }
+
+    public static DFA example_DBA(){
+        DFA A = DFAGen.exampleState(3);
+        State a = A.getState(0);
+        State b = A.getState(1);
+        State dead = A.getState(2);
+
+        a.addTransition(letter_a,a.getIndex());
+        a.addTransition(letter_b,b.getIndex());
+        b.addTransition(letter_a,dead.getIndex());
+        b.addTransition(letter_b,b.getIndex());
+
+        A.getAcceptance().setFinal(b.getIndex());
+
+        return A;
     }
 
 }
