@@ -5,6 +5,8 @@ import cn.ac.ios.machine.dfa.*;
 import cn.ac.ios.util.UtilMachine;
 import cn.ac.ios.words.Word;
 import cn.ac.ios.machine.State;
+import dk.brics.automaton.Automaton;
+import org.omg.CORBA.BAD_CONTEXT;
 
 public class FDFATest {
 
@@ -55,12 +57,17 @@ public class FDFATest {
     }
     public static void DBAToFDFATest(){
         DFA B = DFAGen.example_DBA();
-        FDFA A = UtilMachine.DBAToFDFA(B);
+        FDFA A = BasicOperations.DBAToFDFA(B);
         System.out.println(A);
 
     }
+    public static void FDFAtoNBATest(){
+        FDFA A = DFAGen.exmple_FDFA2();
+        Automaton B = BasicOperations.FDFAtoNBA(A);
+        System.out.println(B.toDot());
+    }
     public static void main(String[] argv){
-        DBAToFDFATest();
+        FDFAtoNBATest();
     }
 
 

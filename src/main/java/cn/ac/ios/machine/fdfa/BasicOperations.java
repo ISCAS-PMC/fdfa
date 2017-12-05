@@ -7,7 +7,9 @@ import cn.ac.ios.util.UtilMachine;
 import cn.ac.ios.words.APList;
 import cn.ac.ios.words.Word;
 import dk.brics.automaton.Automaton;
+import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import javax.rmi.CORBA.Util;
 import java.util.*;
@@ -204,5 +206,87 @@ public class BasicOperations {
         return inter;
     }
 
+    /**
+     *
+     *  DBA => FDFA
+     *
+     */
+    static public DFA constructProgessByDBA(DFA B,int init) {
+        // Require totality of B
+        DFA A = B.clone();
+        State accept = A.createState();
+        DFAAcc f = A.getAcceptance();
+        for (int letter = 0; letter < A.getInAPs().size(); letter++) {
+            accept.addTransition(letter,accept.getIndex());
+        }
+        for (int i = 0; i < A.getStateSize(); i++) {
+            cn.ac.ios.machine.State u = A.getState(i);
+            cn.ac.ios.machine.Transition[] trans = u.getTransitions();
 
+            for (int letter = 0; letter < A.getInAPs().size(); letter++) {
+                cn.ac.ios.machine.Transition t = trans[letter];
+                if (f.isFinal(t.getSuccessor())){
+                    u.addTransition(letter,accept.getIndex());
+                }
+            }
+        }
+        A.getAcceptance().finals.clear();
+        A.getAcceptance().setFinal(accept.getIndex());
+        A.setInitial(init);
+        return A;
+    }
+    static public FDFA DBAToFDFA(DFA B){
+        // Require totality of B
+        DFA leading = B.clone();
+        leading.getAcceptance().finals.clear();
+        int n = B.getStateSize();
+        ArrayList<DFA> progess = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            progess.add(BasicOperations.constructProgessByDBA(B,i));
+        }
+        FDFA A = new FDFA(leading,progess);
+        return A;
+    }
+
+    /**
+     * FDFA => NBA (DK representation)
+     */
+    public static Automaton FDFAtoNBA(FDFA A) {
+        // L means Leading and P means Progress
+        TIntObjectMap<dk.brics.automaton.State> map = new TIntObjectHashMap<>();
+        Automaton dkAutL = UtilMachine.dfaToDkAutomaton(
+                map,
+                A.getLeadingDFA(),
+                (n) -> {return n == A.leadingDFA.getInitialState();},
+                (n) -> {return false;}
+        );
+
+        for (int q = 0; q < A.getLeadingDFA().getStateSize(); q++) {
+            DFA P = A.getProgressDFA(q);
+            int Pinit = P.getInitialState();
+            DFAAcc acc = P.getAcceptance();
+
+            for (int f = 0; f < P.getStateSize(); f++){
+                if (acc.isFinal(f)){
+                    Automaton Mqq = UtilMachine.dfaToDkAutomaton(A.getLeadingDFA(), q, q);
+                    Mqq.minimize();
+
+                    Automaton Pff = UtilMachine.dfaToDkAutomaton(P, f, f);
+                    Pff.minimize();
+
+                    Automaton Pif = UtilMachine.dfaToDkAutomaton(P,Pinit,f);
+                    Pif.minimize();
+
+                    Automaton product = Mqq.intersection(Pff).intersection(Pif);
+
+                    for (dk.brics.automaton.Transition t : product.getInitialState().getTransitions()) {
+                        dk.brics.automaton.State u = map.get(q);
+                        u.addTransition(new dk.brics.automaton.Transition(t.getMin(), t.getMax(), t.getDest()));
+                    }
+//                    System.out.println(dkAutL.toDot());
+                }
+            }
+        }
+        return dkAutL;
+    }
 }

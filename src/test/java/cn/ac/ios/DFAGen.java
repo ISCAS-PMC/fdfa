@@ -167,6 +167,9 @@ public class DFAGen {
         return result;
     }
 
+    /**
+     * L = a^* b^w
+     */
     public static DFA example_DBA(){
         DFA A = DFAGen.exampleState(3);
         State a = A.getState(0);
