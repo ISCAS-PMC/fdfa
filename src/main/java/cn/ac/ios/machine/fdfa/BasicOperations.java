@@ -251,6 +251,11 @@ public class BasicOperations {
     /**
      * FDFA => NBA (DK representation)
      */
+
+    public static Automaton addEpsilon(Automaton A){
+
+        return A;
+    }
     public static Automaton FDFAtoNBA(FDFA A) {
         // L means Leading and P means Progress
         TIntObjectMap<dk.brics.automaton.State> map = new TIntObjectHashMap<>();
@@ -277,9 +282,18 @@ public class BasicOperations {
                     Automaton Pif = UtilMachine.dfaToDkAutomaton(P,Pinit,f);
                     Pif.minimize();
 
-                    Automaton product = Mqq.intersection(Pff).intersection(Pif);
+                    Automaton Nqf = Mqq.intersection(Pff).intersection(Pif);
 
-                    for (dk.brics.automaton.Transition t : product.getInitialState().getTransitions()) {
+                    assert Nqf.getAcceptStates().size() <= 1;
+
+                    for(dk.brics.automaton.State Productf : Nqf.getAcceptStates()){
+                        for (dk.brics.automaton.Transition t : Nqf.getInitialState().getTransitions()) {
+                            Productf.addTransition(new dk.brics.automaton.Transition(t.getMin(), t.getMax(), t.getDest()));
+                        }
+                    }
+                    Nqf.minimize();
+
+                    for (dk.brics.automaton.Transition t : Nqf.getInitialState().getTransitions()) {
                         dk.brics.automaton.State u = map.get(q);
                         u.addTransition(new dk.brics.automaton.Transition(t.getMin(), t.getMax(), t.getDest()));
                     }

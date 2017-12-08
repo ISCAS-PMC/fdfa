@@ -20,18 +20,20 @@ public class FDFATest {
         }
     }
 
-    public static void InterSectionTest() {
+    public static FDFA InterSectionTest() {
         FDFA F1 = DFAGen.exmple_FDFA1();
         FDFA F2 = DFAGen.exmple_FDFA2();
         FDFA C = BasicOperations.intersection(F1,F2);
         System.out.println(C);
+        return C;
     }
 
-    public static void UnionTest() {
+    public static FDFA UnionTest() {
         FDFA F1 = DFAGen.exmple_FDFA1();
         FDFA F2 = DFAGen.exmple_FDFA2();
         FDFA C = BasicOperations.union(F1,F2);
         System.out.println(C);
+        return C;
     }
 
     public static void DFARunTest() {
@@ -62,7 +64,7 @@ public class FDFATest {
 
     }
     public static void FDFAtoNBATest(){
-        FDFA A = DFAGen.exmple_FDFA2();
+        FDFA A = FDFATest.InterSectionTest();
         Automaton B = BasicOperations.FDFAtoNBA(A);
         System.out.println(B.toDot());
     }
