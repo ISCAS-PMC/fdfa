@@ -285,7 +285,7 @@ public class BasicOperations {
                     Automaton Nqf = Mqq.intersection(Pff).intersection(Pif);
 
                     assert Nqf.getAcceptStates().size() <= 1;
-
+                    // TODO proof Nqf has only one final state
                     for(dk.brics.automaton.State Productf : Nqf.getAcceptStates()){
                         for (dk.brics.automaton.Transition t : Nqf.getInitialState().getTransitions()) {
                             Productf.addTransition(new dk.brics.automaton.Transition(t.getMin(), t.getMax(), t.getDest()));
